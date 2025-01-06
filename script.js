@@ -18,6 +18,8 @@ class Tree {
     return this.constructTree(sortedArray, 0, sortedArray.length - 1);
   }
 
+  //constructTree????
+
   //prettyPrint() function that will console.log your tree in a structured format.
   prettyPrint(node = this.root, prefix = "", isLeft = true) {
     if (node === null) return;
@@ -52,5 +54,46 @@ class Tree {
     this.root = insertNode(this.root, value);
   }
 
-  deleteItem(value) {}
+  deleteItem(value) {
+    const getSuccessor = (curr) => {
+      curr = curr.right;
+      while (curr !== null && curr.left !== null) {
+        curr = curr.left;
+      }
+      return curr;
+    };
+
+    const delNode = (root, value) => {
+      if (root === null) return root;
+
+      if (value < root.data) {
+        root.left = delNode(root.left, value);
+      } else if (value > root.data) {
+        root.right = delNode(root.right, value);
+      } else {
+        // Node to be deleted found
+        if (root.left === null) return root.right;
+        if (root.right === null) return root.left;
+
+        // Node with two children
+        const succ = getSuccessor(root);
+        root.data = succ.data;
+        root.right = delNode(root.right, succ.data);
+      }
+      return root;
+    };
+
+    // Update the root after deletion
+    this.root = delNode(this.root, value);
+  }
+
+  find(value) {}
+
+  levelOrder(callback) {}
+
+  inOrder(callback){} 
+
+  preOrder(callback){}
+
+  postOrder(callback){}
 }
