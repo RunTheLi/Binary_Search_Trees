@@ -1,6 +1,6 @@
 class Node {
-  constructor() {
-    this.data = this.data;
+  constructor(value) {
+    this.data = value; // Fix: Changed this.value to value
     this.left = null;
     this.right = null;
   }
@@ -50,18 +50,18 @@ class Tree {
   insert(value) {
     const insertNode = (root, value) => {
       if (root === null) return new Node(value);
-
+  
       // Duplicates not allowed
       if (root.data === value) return root;
-
+  
       if (value < root.data) {
-        root.left = insert(root.left, key);
+        root.left = insertNode(root.left, value); // Corrected the recursive call
       } else if (value > root.data) {
-        root.right = insert(root.right, key);
+        root.right = insertNode(root.right, value); // Corrected the recursive call
       }
       return root;
     };
-
+  
     this.root = insertNode(this.root, value);
   }
 
@@ -130,7 +130,7 @@ class Tree {
     if (this.root !== null) traverseLevel([this.root]);
   }
 
-    //same as levelOrder but we have to modify it
+  //same as levelOrder but we have to modify it
   inOrder(callback) {
     if (typeof callback !== "function") {
       throw new Error("A callback function is required.");
@@ -140,9 +140,9 @@ class Tree {
       traverse(node.left);
       callback(node);
       traverse(node.right);
-  };
-      traverse(this.root);
-}
+    };
+    traverse(this.root);
+  }
 
   preOrder(callback) {
     if (typeof callback !== "function") {
@@ -153,8 +153,8 @@ class Tree {
       callback(node);
       traverse(node.left);
       traverse(node.right);
-  };
-      traverse(this.root);
+    };
+    traverse(this.root);
   }
 
   postOrder(callback) {
@@ -166,11 +166,11 @@ class Tree {
       traverse(node.left);
       traverse(node.right);
       callback(node);
-  };
-      traverse(this.root);
+    };
+    traverse(this.root);
   }
 
-  height(node){
+  height(node) {
     if (node === null) return -1;
 
     const leftHeight = this.height(node.left);
@@ -179,13 +179,13 @@ class Tree {
     return Math.max(leftHeight, rightHeight) + 1;
   }
 
-  depth(node){
+  depth(node) {
     if (node === null) return -1;
 
     let depthCount = 0;
     let currentNode = node;
 
-    while (currentNode !== this.root){
+    while (currentNode !== this.root) {
       depthCount++;
       currentNode = this.findParent(currentNode);
     }
@@ -194,22 +194,22 @@ class Tree {
 
   findParent(targetNode, currentNode = this.root) {
     if (currentNode === null || targetNode === null) return null;
-  
+
     if (
-      (currentNode.left === targetNode) || 
+      (currentNode.left === targetNode) ||
       (currentNode.right === targetNode)
     ) {
       return currentNode;
     }
-  
+
     // Recursively search in the left and right subtrees.
     return (
-      this.findParent(targetNode, currentNode.left) || 
+      this.findParent(targetNode, currentNode.left) ||
       this.findParent(targetNode, currentNode.right)
     );
   }
 
-  isBalanced(node = this.root){
+  isBalanced(node = this.root) {
     if (node === null) return true;
 
     const leftHeight = this.height(node.left);
@@ -219,17 +219,72 @@ class Tree {
     return isCurrentBalanced && this.isBalanced(node.left) && this.isBalanced(node.right);
   }
 
-  rebalance(){
+  rebalance() {
     const collectDataInOrder = (node, result = []) => {
-    if (node === null) return result;
+      if (node === null) return result;
 
-    collectDataInOrder(node.left, result);
-    result.push(node.data);
-    collectDataInOrder(node.right, result);
-    return result;
+      collectDataInOrder(node.left, result);
+      result.push(node.data);
+      collectDataInOrder(node.right, result);
+      return result;
     };
 
     const sortedArray = collectDataInOrder(this.root);
     this.root = this.buildTree(sortedArray);
   }
 }
+
+// Create a binary search tree and perform operations
+function runDriverScript() {
+  const bst = new Tree([10, 20, 30, 40, 50, 60, 70, 80, 90]);
+
+  console.log('Initial Tree:');
+  bst.prettyPrint();
+
+  console.log('\nTree is balanced: ', bst.isBalanced());
+
+  console.log('\nLevel Order:');
+  bst.levelOrder((node) => console.log(node.data));
+
+  console.log('Pre-order:');
+  bst.preOrder((node) => console.log(node.data));
+
+  console.log('Post-order:');
+  bst.postOrder((node) => console.log(node.data));
+
+  console.log('In-order:');
+  bst.inOrder((node) => console.log(node.data));
+
+  console.log('\nUnbalancing the tree by adding numbers greater than 100...');
+  bst.insert(110);
+  bst.insert(120);
+  bst.insert(130);
+  bst.insert(140);
+  bst.insert(150);
+
+  bst.prettyPrint();
+
+  console.log('\nTree is balanced after unbalancing: ', bst.isBalanced());
+
+  // Rebalance the tree
+  console.log('\nRebalancing the tree...');
+  bst.rebalance();
+
+  // Check if the tree is balanced
+  console.log('\nTree is balanced after rebalance: ', bst.isBalanced());
+
+  // Print tree traversals again
+  console.log('\nLevel Order:');
+  bst.levelOrder((node) => console.log(node.data));
+
+  console.log('Pre-order:');
+  bst.preOrder((node) => console.log(node.data));
+
+  console.log('Post-order:');
+  bst.postOrder((node) => console.log(node.data));
+
+  console.log('In-order:');
+  bst.inOrder((node) => console.log(node.data));
+}
+
+runDriverScript();
